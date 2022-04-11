@@ -1,0 +1,58 @@
+﻿@page "/races"
+
+@using PaPBlazor.Data
+@using PaPBlazor.Data.Models
+@inject RacesService RacesService
+
+<h1>Available Races</h1>
+
+<p>This is the list of current support races.</p>
+
+@if (races == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Ability</th>
+                <th>Size</th>
+                <th>Source</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var race in races)
+            {
+                <tr>
+                    <td>@race.Name</td>
+                    @if (race.Lineage != null)
+                    {
+                        <td>Lineage (choose)</td>
+                    }
+                    else if (race.Ability != null && race.Ability.Length > 0)
+                    {
+                        <td>@race.Ability[0].ToString()</td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>@race.Size?.Aggregate((x, y) => $"{x}, {y}")</td>
+                    <td>@race.Source</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Race[] races;
+
+    protected override async Task OnInitializedAsync()
+    {
+        races = await RacesService.GetRacesAsync();
+    }
+}
